@@ -1,13 +1,11 @@
 import { apiResult } from "./../../models/apiResult";
 import { castObject } from "./../../models/castObject";
 import { CAST_LOADED, GET_CAST } from "./../actions/cast";
-import { GET_INDIVIDUAL_SHOW } from "./../actions/individualShow";
-import { GET_SHOWS, QUERY_UPDATE } from "./../actions/shows";
 import produce from "immer";
-import { Action, ActionCreator } from "../actions";
-import show from "../../models/show";
+import { Action } from "../actions";
 import { normalize, schema } from "normalizr";
 import { cast } from "../../models/cast";
+import { GET_SHOWS } from "../actions/shows";
 
 export type State = {
   cast: castObject;
@@ -49,8 +47,6 @@ export function castReducer(state = initialState, action: Action): State {
         const data = action.payload as apiResult;
         console.log("castdata", data);
         let idShows: number[] = [];
-
-        //
         data.map((item) => {
           const castEntity = new schema.Entity("cast");
           const normalizedData = normalize(item.cast, [castEntity]);
@@ -58,14 +54,6 @@ export function castReducer(state = initialState, action: Action): State {
           draft.cast = { ...draft.cast, ...normalizedData.entities.cast };
           draft.idCast[item.show.id] = normalizedData.result;
         });
-        // draft.queryShows[draft.query] = queryShows;
-        //
-
-        // const castEntity = new schema.Entity("cast");
-        // const normalizedData = normalize(data, [castEntity]);
-        // console.log("normalizedData", normalizedData);
-        // draft.cast = { ...draft.cast, ...normalizedData.entities.cast };
-        // draft.idCast[draft.showId] = normalizedData.result;
 
         draft.loading = false;
       });
